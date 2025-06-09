@@ -9,11 +9,13 @@ import com.sky.exception.AccountNotFoundException;
 import com.sky.exception.PasswordErrorException;
 import com.sky.mapper.EmployeeMapper;
 import com.sky.service.EmployeeService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.DigestUtils;
 
 @Service
+@Slf4j
 public class EmployeeServiceImpl implements EmployeeService {
 
     @Autowired
@@ -41,8 +43,10 @@ public class EmployeeServiceImpl implements EmployeeService {
 
         //密码比对
         // 进行md5加密，然后再进行比对
-        password = DigestUtils.md5DigestAsHex(password.getBytes());
-        if (!password.equals(employee.getPassword())) {
+        String encryptedPassword = DigestUtils.md5DigestAsHex(password.getBytes());
+        log.info("输入密码: {}, 加密后: {}, 数据库密码: {}", password, encryptedPassword, employee.getPassword());
+        
+        if (!encryptedPassword.equals(employee.getPassword())) {
             //密码错误
             throw new PasswordErrorException(MessageConstant.PASSWORD_ERROR);
         }

@@ -6,7 +6,7 @@
     <parent>
         <artifactId>spring-boot-starter-parent</artifactId>
         <groupId>org.springframework.boot</groupId>
-        <version>2.7.3</version>
+        <version>3.1.5</version>
     </parent>
     <groupId>com.sky</groupId>
     <artifactId>sky-take-out</artifactId>
@@ -18,8 +18,8 @@
         <module>sky-server</module>
     </modules>
     <properties>
-        <mybatis.spring>2.2.0</mybatis.spring>
-        <lombok>1.18.20</lombok>
+        <mybatis.spring>3.0.2</mybatis.spring>
+        <lombok>1.18.30</lombok>
         <fastjson>1.2.76</fastjson>
         <commons.lang>2.6</commons.lang>
         <druid>1.2.1</druid>
@@ -30,6 +30,7 @@
         <jjwt>0.9.1</jjwt>
         <jaxb-api>2.3.1</jaxb-api>
         <poi>3.16</poi>
+        <maven.compiler.release>17</maven.compiler.release>
     </properties>
     <dependencyManagement>
         <dependencies>
@@ -89,8 +90,18 @@
 
             <dependency>
                 <groupId>io.jsonwebtoken</groupId>
-                <artifactId>jjwt</artifactId>
-                <version>${jjwt}</version>
+                <artifactId>jjwt-api</artifactId>
+                <version>0.11.5</version>
+            </dependency>
+            <dependency>
+                <groupId>io.jsonwebtoken</groupId>
+                <artifactId>jjwt-impl</artifactId>
+                <version>0.11.5</version>
+            </dependency>
+            <dependency>
+                <groupId>io.jsonwebtoken</groupId>
+                <artifactId>jjwt-jackson</artifactId>
+                <version>0.11.5</version>
             </dependency>
 
             <dependency>
@@ -103,6 +114,18 @@
                 <groupId>javax.xml.bind</groupId>
                 <artifactId>jaxb-api</artifactId>
                 <version>${jaxb-api}</version>
+            </dependency>
+
+            <!-- JAXB dependencies for JDK 21 -->
+            <dependency>
+                <groupId>jakarta.xml.bind</groupId>
+                <artifactId>jakarta.xml.bind-api</artifactId>
+                <version>4.0.0</version>
+            </dependency>
+            <dependency>
+                <groupId>org.glassfish.jaxb</groupId>
+                <artifactId>jaxb-runtime</artifactId>
+                <version>4.0.2</version>
             </dependency>
 
             <!-- poi -->
@@ -124,4 +147,22 @@
             </dependency>
         </dependencies>
     </dependencyManagement>
+    
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.11.0</version>
+                <configuration>
+                    <release>17</release>
+                    <encoding>UTF-8</encoding>
+                    <compilerArgs>
+                        <arg>-parameters</arg>
+                    </compilerArgs>
+                    <fork>true</fork>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 </project>

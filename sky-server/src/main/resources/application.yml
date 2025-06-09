@@ -38,19 +38,19 @@ sky:
     # 设置前端传递过来的令牌名称
     admin-token-name: token
 
-# 暂时注释Knife4j配置
-# springdoc:
-#   swagger-ui:
-#     path: /swagger-ui.html
-#     tags-sorter: alpha
-#     operations-sorter: alpha
-#   api-docs:
-#     path: /v3/api-docs
-#   group-configs:
-#     - group: 'default'
-#       paths-to-match: '/**'
-#       packages-to-scan: com.sky.controller
-# knife4j:
-#   enable: true
-#   setting:
-#     language: zh_cn
+# knife4j配置
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+    tags-sorter: alpha
+    operations-sorter: alpha
+  api-docs:
+    path: /v3/api-docs
+  group-configs:
+    - group: 'default'
+      paths-to-match: '/**'
+      packages-to-scan: com.sky.controller
+knife4j:
+  enable: true
+  setting:
+    language: zh_cn

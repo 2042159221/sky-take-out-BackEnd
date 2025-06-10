@@ -62,4 +62,19 @@ public class JwtTokenAdminInterceptor implements HandlerInterceptor {
             return false;
         }
     }
+    
+    /**
+     * 在请求完成后清理ThreadLocal中的数据
+     *
+     * @param request
+     * @param response
+     * @param handler
+     * @param ex
+     * @throws Exception
+     */
+    @Override
+    public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
+        log.info("清理ThreadLocal中的用户ID信息...");
+        BaseContext.removeCurrentId();
+    }
 }

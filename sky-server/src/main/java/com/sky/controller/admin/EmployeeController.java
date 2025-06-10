@@ -1,6 +1,7 @@
 package com.sky.controller.admin;
 
 import com.sky.constant.JwtClaimsConstant;
+import com.sky.constant.MessageConstant;
 import com.sky.dto.EmployeeDTO;
 import com.sky.dto.EmployeeLoginDTO;
 import com.sky.entity.Employee;
@@ -87,7 +88,7 @@ public class EmployeeController {
     public Result save(@RequestBody EmployeeDTO employeeDTO){
         log.info("新增员工：{}",employeeDTO);
         employeeService.save(employeeDTO);
-        return Result.success();
+        return Result.success(MessageConstant.EMPLOYEE_ADD_SUCCESS);
     }
 
 }

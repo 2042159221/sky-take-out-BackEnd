@@ -126,4 +126,18 @@ public class EmployeeServiceImpl implements EmployeeService {
         return new PageResult(total,records);
     }
 
+
+    /**
+     * 启用禁用员工账号
+     * @param status
+     * @param id
+     */
+    @Override
+    public void startOrStop(Integer status, Long id) {
+        // 获取当前登录用户的ID
+        Long currentId = BaseContext.getCurrentId();
+        // 调用mapper的statusById方法更新员工状态
+        employeeMapper.statusById(status, id, currentId);
+    }
+
 }

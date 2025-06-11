@@ -5,6 +5,7 @@ import com.github.pagehelper.Page;
 import com.sky.entity.Employee;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
 @Mapper
@@ -34,4 +35,17 @@ public interface EmployeeMapper {
     Page<Employee>
     pageQuery(EmployeePageQueryDTO employeePageQueryDTO);
 
+    /**
+     * 根据主键动态修改属性
+     * @param employee
+     */
+    void update(Employee employee);
+    
+    /**
+     * 根据id修改员工账号状态
+     * @param status 状态（0禁用，1启用）
+     * @param id 员工id
+     * @param updateUser 修改人id
+     */
+    void statusById(@Param("status") Integer status, @Param("id") Long id, @Param("updateUser") Long updateUser);
 }

@@ -118,6 +118,12 @@
             <artifactId>jaxb-runtime</artifactId>
         </dependency>
 
+        <!-- 添加javax.xml.bind依赖，解决NoClassDefFoundError问题 -->
+        <dependency>
+            <groupId>javax.xml.bind</groupId>
+            <artifactId>jaxb-api</artifactId>
+        </dependency>
+
         <!-- poi -->
         <dependency>
             <groupId>org.apache.poi</groupId>

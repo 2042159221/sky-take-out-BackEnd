@@ -43,16 +43,32 @@ public class CommonController {
             if (originalFilename != null) {
                 String extension = originalFilename.substring(originalFilename.lastIndexOf("."));
                 String objectName = UUID.randomUUID().toString() + extension;
+                
+                // 1. 先上传文件
                 String filePath = aliOssUtil.upload(file.getBytes(), objectName);
+                
+                // 检查返回的filePath是否为null，如果是null说明上传失败
+                if (filePath == null) {
+                    log.error("文件上传失败：filePath为null");
+                    return Result.error(MessageConstant.UPLOAD_FAILED);
+                }
+                
+                // 2. 直接返回标准URL (后续如果出现预览问题可替换为下面的方式)
                 return Result.success(filePath);
-            }else{
+                
+                // 如果需要返回预览URL:
+                // String previewUrl = aliOssUtil.generatePreviewUrl(objectName);
+                // return Result.success(previewUrl);
+            } else {
                 return Result.error(MessageConstant.UPLOAD_FAILED);
             }
         } catch (IOException e) {
-            log.error("文件上传失败：{}", e);
+            log.error("文件读取失败：{}", e.getMessage());
+            return Result.error(MessageConstant.UPLOAD_FAILED);
+        } catch (RuntimeException e) {
+            log.error("OSS上传失败：{}", e.getMessage());
             return Result.error(MessageConstant.UPLOAD_FAILED);
         }
-    
     }
 
 }

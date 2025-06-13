@@ -4,6 +4,7 @@ import com.sky.constant.MessageConstant;
 import com.sky.exception.AccountLockedException;
 import com.sky.exception.AccountNotFoundException;
 import com.sky.exception.PasswordErrorException;
+import com.sky.exception.DeletionNotAllowedException;
 import com.sky.result.Result;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -51,6 +52,17 @@ public class GlobalExceptionHandler {
     @ExceptionHandler
     public Result exceptionHandler(PasswordErrorException ex){
         log.error("异常信息：{}", ex.getMessage());
+        return Result.error(ex.getMessage());
+    }
+
+    /**
+     * 捕获删除不允许异常
+     * @param ex
+     * @return
+     */
+    @ExceptionHandler
+    public Result exceptionHandler(DeletionNotAllowedException ex){
+        log.error("删除操作异常：{}", ex.getMessage());
         return Result.error(ex.getMessage());
     }
 

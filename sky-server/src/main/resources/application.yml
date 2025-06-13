@@ -21,6 +21,13 @@ mybatis:
     #开启驼峰命名
     map-underscore-to-camel-case: true
 
+# PageHelper配置
+pagehelper:
+  helper-dialect: mysql
+  reasonable: true
+  support-methods-arguments: true
+  params: count=countSql
+
 logging:
   level:
     com:

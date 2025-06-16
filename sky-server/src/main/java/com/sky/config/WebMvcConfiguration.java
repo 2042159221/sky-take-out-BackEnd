@@ -19,6 +19,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupp
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.info.Contact;
+import org.springdoc.core.models.GroupedOpenApi;
 
 /**
  * 配置类，注册web层相关组件
@@ -43,7 +44,33 @@ public class WebMvcConfiguration extends WebMvcConfigurationSupport {
     }
 
     /**
-     * 通过knife4j生成接口文档
+     * 通过knife4j生成管理端接口文档
+     * @return
+     */
+    @Bean
+    public GroupedOpenApi adminApi() {
+        log.info("准备生成管理端接口文档...");
+        return GroupedOpenApi.builder()
+                .group("管理端接口")
+                .packagesToScan("com.sky.controller.admin")
+                .build();
+    }
+
+    /**
+     * 通过knife4j生成用户端接口文档
+     * @return
+     */
+    @Bean
+    public GroupedOpenApi userApi() {
+        log.info("准备生成用户端接口文档...");
+        return GroupedOpenApi.builder()
+                .group("用户端接口")
+                .packagesToScan("com.sky.controller.user")
+                .build();
+    }
+
+    /**
+     * 自定义接口文档信息
      * @return
      */
     @Bean

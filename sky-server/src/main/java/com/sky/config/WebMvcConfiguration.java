@@ -11,6 +11,8 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
@@ -33,6 +35,17 @@ public class WebMvcConfiguration extends WebMvcConfigurationSupport {
     private JwtTokenAdminInterceptor jwtTokenAdminInterceptor;
     @Autowired
     private JwtTokenUserInterceptor jwtTokenUserInterceptor;
+
+    /**
+     * 将自定义的 ObjectMapper 注册为 Spring Bean，并设为首选
+     * @return
+     */
+    @Bean
+    @Primary
+    public ObjectMapper jacksonObjectMapper() {
+        return new JacksonObjectMapper();
+    }
+
     /**
      * 注册自定义拦截器
      *
@@ -101,20 +114,4 @@ public class WebMvcConfiguration extends WebMvcConfigurationSupport {
         registry.addResourceHandler("/swagger-ui/**").addResourceLocations("classpath:/META-INF/resources/webjars/swagger-ui/4.15.5/");
     }
 
-    /**
-     * 扩展Spring MVC框架的消息转换器
-     * @param converters
-     */
-    @Override
-    protected void extendMessageConverters(List<HttpMessageConverter<?>> converters) {
-        log.info("扩展Spring MVC框架的消息转换器...");
-        // 创建一个消息转换器对象
-        MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
-        // 需要为消息转换器设置一个对象转换器，对象转换器可以将Java对象序列化为json数据
-        converter.setObjectMapper(new JacksonObjectMapper());
-        // 将自己的消息转化器加入容器中，但放在第1个位置，保留默认的第0个转换器
-        converters.add(1, converter);
-    }
-
-  
 }

@@ -53,8 +53,5 @@ public class UserController {
         String token = JwtUtil.createJWT(jwtProperties.getUserSecretKey(),jwtProperties.getUserTtl(),claims);
         UserLoginVO userLoginVO = UserLoginVO.builder().id(user.getId()).openid(user.getOpenid()).token(token).build();
         return Result.success(userLoginVO);
-
-
-
     }
 }

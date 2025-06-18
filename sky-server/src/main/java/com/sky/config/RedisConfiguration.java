@@ -1,11 +1,13 @@
 package com.sky.config;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
+import org.springframework.context.annotation.Primary;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -38,7 +40,8 @@ public class RedisConfiguration {
     }
     
     @Bean
-    public RedisTemplate<String, Object> objectRedisTemplate(RedisConnectionFactory redisConnectionFactory){
+    @Primary
+    public RedisTemplate<String, Object> objectRedisTemplate(RedisConnectionFactory redisConnectionFactory, ObjectMapper objectMapper){
         log.info("开始创建处理对象的redis模板");
         
         // 创建RedisTemplate对象，设置泛型为<String, Object>
@@ -49,8 +52,8 @@ public class RedisConfiguration {
         
         // 创建String类型的序列化器
         StringRedisSerializer stringRedisSerializer = new StringRedisSerializer();
-        // 创建Object类型的序列化器
-        GenericJackson2JsonRedisSerializer jsonRedisSerializer = new GenericJackson2JsonRedisSerializer();
+        // 创建使用自定义ObjectMapper的JSON序列化器
+        GenericJackson2JsonRedisSerializer jsonRedisSerializer = new GenericJackson2JsonRedisSerializer(objectMapper);
         
         // 设置各种类型的序列化器
         redisTemplate.setKeySerializer(stringRedisSerializer);

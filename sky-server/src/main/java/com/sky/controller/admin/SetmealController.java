@@ -29,7 +29,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 /**
  * 套餐管理
  */
-@RestController
+@RestController("adminSetmealController")
 @RequestMapping("/admin/setmeal")
 @Tag(name = "套餐相关接口")
 @Slf4j

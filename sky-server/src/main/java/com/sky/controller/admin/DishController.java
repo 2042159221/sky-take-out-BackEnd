@@ -25,7 +25,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 /**
  * 菜品管理
  */
-@RestController
+@RestController("adminDishController")
 @RequestMapping("/admin/dish")
 @Tag(name = "菜品相关接口")
 @Slf4j

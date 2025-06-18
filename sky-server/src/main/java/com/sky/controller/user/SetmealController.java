@@ -2,7 +2,7 @@
 package com.sky.controller.user;
 
 import java.util.List;
-
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.annotation.AccessType;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -36,6 +36,7 @@ public class SetmealController {
      */
     @GetMapping("/list")
     @Operation(summary = "根据分类id查询套餐")
+    @Cacheable(value = "setmealCache", key = "#categoryId")
     public Result<List<Setmeal>> list(Long categoryId){
         Setmeal setmeal = new Setmeal();
         setmeal.setCategoryId(categoryId);

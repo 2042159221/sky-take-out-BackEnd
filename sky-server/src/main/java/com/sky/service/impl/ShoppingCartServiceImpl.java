@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.sky.context.BaseContext;
+import com.sky.controller.admin.CategoryController;
 import com.sky.dto.ShoppingCartDTO;
 import com.sky.entity.Dish;
 import com.sky.entity.Setmeal;
@@ -19,7 +20,6 @@ import com.sky.service.ShoppingCartService;
 @Service
 public class ShoppingCartServiceImpl implements ShoppingCartService{
 
-    private final GroupedOpenApi adminApi;
 
     @Autowired
     private ShoppingCartMapper shoppingCartMapper;
@@ -28,9 +28,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService{
     @Autowired
     private SetmealMapper setmealMapper;
 
-    ShoppingCartServiceImpl(GroupedOpenApi adminApi) {
-        this.adminApi = adminApi;
-    }
+
 
     /**
      * 添加购物车
@@ -79,6 +77,14 @@ public class ShoppingCartServiceImpl implements ShoppingCartService{
      */
     public List<ShoppingCart> showShoppingCart(){
         return shoppingCartMapper.list(ShoppingCart.builder().userId(BaseContext.getCurrentId()).build());
-        
+
+    }
+
+    /**
+     * 清空购物车信息
+     * 
+     */
+    public void cleanShoppingCart(){
+        shoppingCartMapper.deleteByUserId(BaseContext.getCurrentId());
     }
 }

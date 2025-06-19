@@ -1,8 +1,9 @@
 package com.sky.controller.user;
 
 import java.util.List;
-
+import org.springdoc.core.models.GroupedOpenApi;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -26,8 +27,14 @@ import lombok.extern.slf4j.Slf4j;
 @Tag(name = "C端-购物车接口")
 
 public class ShoppingCartController {
+
+    private final GroupedOpenApi adminApi;
     @Autowired
     private ShoppingCartService shoppingCartService;
+
+    ShoppingCartController(GroupedOpenApi adminApi) {
+        this.adminApi = adminApi;
+    }
 
     /**
      * 添加购物车
@@ -52,4 +59,15 @@ public class ShoppingCartController {
      public Result<List<ShoppingCart>> list(){
         return Result.success(shoppingCartService.showShoppingCart());
      }
+
+     /**
+      * 清空购物车信息
+      @return
+      */
+      @DeleteMapping("/clean")
+      @Operation(summary = "清空购物车信息")
+      public Result<String> clean(){
+        shoppingCartService.cleanShoppingCart();
+        return Result.success();
+      }
 }

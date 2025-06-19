@@ -16,6 +16,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
+import org.springframework.web.servlet.config.annotation.PathMatchConfigurer;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport;
 
@@ -61,6 +62,16 @@ public class WebMvcConfiguration extends WebMvcConfigurationSupport {
                 .addPathPatterns("/user/**")
                 .excludePathPatterns("/user/user/login")
                 .excludePathPatterns("/user/shop/status");
+    }
+
+    /**
+     * 配置URL路径匹配，使其忽略末尾斜杠的差异
+     * @param configurer
+     */
+    @Override
+    protected void configurePathMatch(PathMatchConfigurer configurer) {
+        log.info("配置URL路径匹配，使其忽略末尾斜杠的差异...");
+        configurer.setUseTrailingSlashMatch(true);
     }
 
     /**

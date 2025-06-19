@@ -1,6 +1,9 @@
 package com.sky.controller.user;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -8,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.sky.result.Result;
 import com.sky.service.ShoppingCartService;
 import com.sky.dto.ShoppingCartDTO;
+import com.sky.entity.ShoppingCart;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -39,4 +43,13 @@ public class ShoppingCartController {
         return Result.success();
     }
 
+    /**
+     * 查看购物车
+     * @return
+     */
+     @GetMapping("/list")
+     @Operation(summary = "查看购物车")
+     public Result<List<ShoppingCart>> list(){
+        return Result.success(shoppingCartService.showShoppingCart());
+     }
 }

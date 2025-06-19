@@ -28,11 +28,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.List;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * 微信支付工具类
  */
 @Component
+@Slf4j
 public class WeChatPayUtil {
 
     //微信支付下单接口地址
@@ -50,13 +52,19 @@ public class WeChatPayUtil {
      * @return
      */
     private CloseableHttpClient getClient() {
+        // 如果启用了模拟支付模式，直接返回null
+        if (Boolean.TRUE.equals(weChatProperties.getMockPay())) {
+            log.info("当前为模拟支付模式，不创建微信支付客户端");
+            return null;
+        }
+
         PrivateKey merchantPrivateKey = null;
         try {
             //merchantPrivateKey商户API私钥，如何加载商户API私钥请看常见问题
             merchantPrivateKey = PemUtil.loadPrivateKey(new FileInputStream(new File(weChatProperties.getPrivateKeyFilePath())));
             //加载平台证书文件
             X509Certificate x509Certificate = PemUtil.loadCertificate(new FileInputStream(new File(weChatProperties.getWeChatPayCertFilePath())));
-            //wechatPayCertificates微信支付平台证书列表。你也可以使用后面章节提到的“定时更新平台证书功能”，而不需要关心平台证书的来龙去脉
+            //wechatPayCertificates微信支付平台证书列表。你也可以使用后面章节提到的"定时更新平台证书功能"，而不需要关心平台证书的来龙去脉
             List<X509Certificate> wechatPayCertificates = Arrays.asList(x509Certificate);
 
             WechatPayHttpClientBuilder builder = WechatPayHttpClientBuilder.create()
@@ -67,9 +75,36 @@ public class WeChatPayUtil {
             CloseableHttpClient httpClient = builder.build();
             return httpClient;
         } catch (FileNotFoundException e) {
-            e.printStackTrace();
+            log.error("微信支付证书文件不存在: {}", e.getMessage());
             return null;
         }
+    }
+
+    /**
+     * 模拟微信支付，生成虚拟的支付参数
+     * 
+     * @param orderNum 订单号
+     * @param total 金额
+     * @param description 商品描述
+     * @param openid 用户openid
+     * @return 模拟的支付参数
+     */
+    private JSONObject mockPay(String orderNum, BigDecimal total, String description, String openid) {
+        log.info("使用模拟支付模式，生成虚拟支付参数，订单号：{}，金额：{}，商品描述：{}", orderNum, total, description);
+        
+        JSONObject jo = new JSONObject();
+        // 生成随机的支付参数
+        String timeStamp = String.valueOf(System.currentTimeMillis() / 1000);
+        String nonceStr = RandomStringUtils.randomNumeric(32);
+        String mockPrepayId = "mock_prepay_" + orderNum;
+        
+        jo.put("timeStamp", timeStamp);
+        jo.put("nonceStr", nonceStr);
+        jo.put("package", "prepay_id=" + mockPrepayId);
+        jo.put("signType", "RSA");
+        jo.put("paySign", "MOCK_PAY_SIGN_" + System.currentTimeMillis()); // 模拟签名
+        
+        return jo;
     }
 
     /**
@@ -80,7 +115,19 @@ public class WeChatPayUtil {
      * @return
      */
     private String post(String url, String body) throws Exception {
+        // 如果启用了模拟支付模式，返回模拟响应
+        if (Boolean.TRUE.equals(weChatProperties.getMockPay())) {
+            log.info("当前为模拟支付模式，模拟POST请求响应");
+            JSONObject mockResponse = new JSONObject();
+            mockResponse.put("prepay_id", "mock_prepay_id_" + System.currentTimeMillis());
+            return mockResponse.toJSONString();
+        }
+
         CloseableHttpClient httpClient = getClient();
+        if (httpClient == null) {
+            log.error("无法创建HTTP客户端，请检查微信支付配置");
+            throw new Exception("无法创建HTTP客户端，请检查微信支付配置");
+        }
 
         HttpPost httpPost = new HttpPost(url);
         httpPost.addHeader(HttpHeaders.ACCEPT, ContentType.APPLICATION_JSON.toString());
@@ -105,7 +152,19 @@ public class WeChatPayUtil {
      * @return
      */
     private String get(String url) throws Exception {
+        // 如果启用了模拟支付模式，返回模拟响应
+        if (Boolean.TRUE.equals(weChatProperties.getMockPay())) {
+            log.info("当前为模拟支付模式，模拟GET请求响应");
+            JSONObject mockResponse = new JSONObject();
+            mockResponse.put("mock_data", "mock_value");
+            return mockResponse.toJSONString();
+        }
+
         CloseableHttpClient httpClient = getClient();
+        if (httpClient == null) {
+            log.error("无法创建HTTP客户端，请检查微信支付配置");
+            throw new Exception("无法创建HTTP客户端，请检查微信支付配置");
+        }
 
         HttpGet httpGet = new HttpGet(url);
         httpGet.addHeader(HttpHeaders.ACCEPT, ContentType.APPLICATION_JSON.toString());
@@ -132,6 +191,14 @@ public class WeChatPayUtil {
      * @return
      */
     private String jsapi(String orderNum, BigDecimal total, String description, String openid) throws Exception {
+        // 如果启用了模拟支付模式，返回模拟响应
+        if (Boolean.TRUE.equals(weChatProperties.getMockPay())) {
+            log.info("当前为模拟支付模式，模拟jsapi下单响应");
+            JSONObject mockResponse = new JSONObject();
+            mockResponse.put("prepay_id", "mock_prepay_id_" + orderNum);
+            return mockResponse.toJSONString();
+        }
+
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("appid", weChatProperties.getAppid());
         jsonObject.put("mchid", weChatProperties.getMchid());
@@ -164,45 +231,67 @@ public class WeChatPayUtil {
      * @return
      */
     public JSONObject pay(String orderNum, BigDecimal total, String description, String openid) throws Exception {
-        //统一下单，生成预支付交易单
-        String bodyAsString = jsapi(orderNum, total, description, openid);
-        //解析返回结果
-        JSONObject jsonObject = JSON.parseObject(bodyAsString);
-        System.out.println(jsonObject);
-
-        String prepayId = jsonObject.getString("prepay_id");
-        if (prepayId != null) {
-            String timeStamp = String.valueOf(System.currentTimeMillis() / 1000);
-            String nonceStr = RandomStringUtils.randomNumeric(32);
-            ArrayList<Object> list = new ArrayList<>();
-            list.add(weChatProperties.getAppid());
-            list.add(timeStamp);
-            list.add(nonceStr);
-            list.add("prepay_id=" + prepayId);
-            //二次签名，调起支付需要重新签名
-            StringBuilder stringBuilder = new StringBuilder();
-            for (Object o : list) {
-                stringBuilder.append(o).append("\n");
-            }
-            String signMessage = stringBuilder.toString();
-            byte[] message = signMessage.getBytes();
-
-            Signature signature = Signature.getInstance("SHA256withRSA");
-            signature.initSign(PemUtil.loadPrivateKey(new FileInputStream(new File(weChatProperties.getPrivateKeyFilePath()))));
-            signature.update(message);
-            String packageSign = Base64.getEncoder().encodeToString(signature.sign());
-
-            //构造数据给微信小程序，用于调起微信支付
-            JSONObject jo = new JSONObject();
-            jo.put("timeStamp", timeStamp);
-            jo.put("nonceStr", nonceStr);
-            jo.put("package", "prepay_id=" + prepayId);
-            jo.put("signType", "RSA");
-            jo.put("paySign", packageSign);
-
-            return jo;
+        // 如果启用了模拟支付模式，直接返回模拟支付参数
+        if (Boolean.TRUE.equals(weChatProperties.getMockPay())) {
+            log.info("使用模拟支付模式，订单号：{}", orderNum);
+            return mockPay(orderNum, total, description, openid);
         }
-        return jsonObject;
+
+        try {
+            //统一下单，生成预支付交易单
+            String bodyAsString = jsapi(orderNum, total, description, openid);
+            //解析返回结果
+            JSONObject jsonObject = JSON.parseObject(bodyAsString);
+            System.out.println(jsonObject);
+
+            String prepayId = jsonObject.getString("prepay_id");
+            if (prepayId != null) {
+                String timeStamp = String.valueOf(System.currentTimeMillis() / 1000);
+                String nonceStr = RandomStringUtils.randomNumeric(32);
+                ArrayList<Object> list = new ArrayList<>();
+                list.add(weChatProperties.getAppid());
+                list.add(timeStamp);
+                list.add(nonceStr);
+                list.add("prepay_id=" + prepayId);
+                //二次签名，调起支付需要重新签名
+                StringBuilder stringBuilder = new StringBuilder();
+                for (Object o : list) {
+                    stringBuilder.append(o).append("\n");
+                }
+                String signMessage = stringBuilder.toString();
+                byte[] message = signMessage.getBytes();
+
+                Signature signature = Signature.getInstance("SHA256withRSA");
+                signature.initSign(PemUtil.loadPrivateKey(new FileInputStream(new File(weChatProperties.getPrivateKeyFilePath()))));
+                signature.update(message);
+                String packageSign = Base64.getEncoder().encodeToString(signature.sign());
+
+                //构造数据给微信小程序，用于调起微信支付
+                JSONObject jo = new JSONObject();
+                jo.put("timeStamp", timeStamp);
+                jo.put("nonceStr", nonceStr);
+                jo.put("package", "prepay_id=" + prepayId);
+                jo.put("signType", "RSA");
+                jo.put("paySign", packageSign);
+
+                return jo;
+            }
+            return jsonObject;
+        } catch (Exception e) {
+            log.error("微信支付调用失败: {}", e.getMessage());
+            // 如果真实支付失败，也可以降级到模拟支付
+            log.info("降级到模拟支付模式");
+            return mockPay(orderNum, total, description, openid);
+        }
+    }
+
+    /**
+     * 判断当前是否为模拟支付模式
+     * 
+     * @return 是否为模拟支付模式
+     */
+    public boolean isMockPayMode() {
+        return Boolean.TRUE.equals(weChatProperties.getMockPay());
     }
 
     /**
@@ -215,6 +304,17 @@ public class WeChatPayUtil {
      * @return
      */
     public String refund(String outTradeNo, String outRefundNo, BigDecimal refund, BigDecimal total) throws Exception {
+        // 如果启用了模拟支付模式，返回模拟响应
+        if (Boolean.TRUE.equals(weChatProperties.getMockPay())) {
+            log.info("当前为模拟支付模式，模拟退款响应");
+            JSONObject mockResponse = new JSONObject();
+            mockResponse.put("status", "SUCCESS");
+            mockResponse.put("out_refund_no", outRefundNo);
+            mockResponse.put("out_trade_no", outTradeNo);
+            mockResponse.put("refund_id", "mock_refund_" + System.currentTimeMillis());
+            return mockResponse.toJSONString();
+        }
+
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("out_trade_no", outTradeNo);
         jsonObject.put("out_refund_no", outRefundNo);

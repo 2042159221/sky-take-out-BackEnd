@@ -1,6 +1,5 @@
 package com.sky.controller.user;
 
-import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -11,9 +10,10 @@ import com.sky.dto.OrdersSubmitDTO;
 import com.sky.result.PageResult;
 import com.sky.result.Result;
 import com.sky.service.OrderService;
-import com.sky.service.impl.AddressBookServiceImpl;
+
 import com.sky.vo.OrderPaymentVO;
 import com.sky.vo.OrderSubmitVO;
+import com.sky.vo.OrderVO;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -31,16 +31,10 @@ import org.springframework.web.bind.annotation.PathVariable;
 @Tag(name = "C端-订单接口")
 public class OrderController {
 
-    private final AddressBookServiceImpl addressBookServiceImpl;
-
-    private final AddressBookController addressBookController;
     @Autowired
     private OrderService orderService;
 
-    OrderController(AddressBookController addressBookController, AddressBookServiceImpl addressBookServiceImpl) {
-        this.addressBookController = addressBookController;
-        this.addressBookServiceImpl = addressBookServiceImpl;
-    }
+
 
     /**
      * 用户下单
@@ -82,5 +76,20 @@ public class OrderController {
         PageResult pageResult = orderService.pageQuery4User(page, pageSize, status);
         return Result.success(pageResult);
     }
+
+    /**
+     * 查询订单详情
+     * @param id
+     * @return
+     */
+    @GetMapping("/orderDetail/{id}")
+    @Operation(summary = "查询订单详情")
+    public Result<OrderVO> details(@PathVariable("id") Long id){
+        
+        
+        OrderVO orderVO = orderService.details(id);
+        return Result.success(orderVO);
+    }
+
 
 }

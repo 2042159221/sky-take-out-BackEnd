@@ -7,3 +7,4 @@
 
 # 忽略本地敏感配置文件
 sky-server/src/main/resources/application-dev.yml
+*.mdc

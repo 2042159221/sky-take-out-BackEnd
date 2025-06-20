@@ -48,7 +48,6 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class OrderServiceImpl implements OrderService {
 
-    private final AddressBookController addressBookController;
 
     @Autowired
     private OrderMapper orderMapper;
@@ -64,9 +63,7 @@ public class OrderServiceImpl implements OrderService {
     private AddressBookMapper addressBookMapper;
 
 
-    OrderServiceImpl(AddressBookController addressBookController) {
-        this.addressBookController = addressBookController;
-    }
+  
 
 
     /**
@@ -232,4 +229,46 @@ public class OrderServiceImpl implements OrderService {
 
         return orderVO;
     }
+
+    /**
+     * 用户取消订单
+     * @param id
+     */
+    public void userCancelById(Long id) throws Exception{
+        //根据id 查询订单
+        Orders ordersDB = orderMapper.getById(id);
+
+        //校验订单是否存在
+        if(ordersDB == null){
+            throw new OrderBusinessException(MessageConstant.ORDER_NOT_FOUND);
+        }
+
+        //订单状态 1待付款 2待接单 3已接单 4派送中 5已完成 6已取消
+        if (ordersDB.getStatus() > 2) 
+        {
+            throw new OrderBusinessException(MessageConstant.ORDER_STATUS_ERROR);
+            
+        }
+
+        Orders orders = new Orders();
+        orders.setId(ordersDB.getId());
+
+        //订单处于待接单状态下取消，需要进行退款
+        if (ordersDB.getStatus().equals(Orders.TO_BE_CONFIRMED)) {
+            //调用微信支付退款接口
+            weChatPayUtil.refund(ordersDB.getNumber(), ordersDB.getNumber(), new BigDecimal(0.01), new BigDecimal(0.01));
+
+            //支付状态修改为已退款
+            orders.setPayStatus(Orders.REFUND);
+        }
+            //更新订单状态、取消原因、取消时间
+        orders.setStatus(Orders.CANCELLED);
+        orders.setCancelReason("用户取消");
+        orders.setCancelTime(LocalDateTime.now());
+        orderMapper.update(orders);
+        
+
+    }
+
+    
 }

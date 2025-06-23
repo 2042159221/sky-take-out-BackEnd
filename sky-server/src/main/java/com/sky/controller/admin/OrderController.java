@@ -6,10 +6,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.sky.service.OrderService;
+import com.sky.vo.OrderStatisticsVO;
 import com.sky.result.Result;
 import com.sky.result.PageResult;
 import com.sky.dto.OrdersPageQueryDTO;
 import io.swagger.v3.oas.annotations.Operation;
+
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -36,5 +39,16 @@ public class OrderController {
         log.info("订单搜索：{}", ordersPageQueryDTO);
         PageResult pageResult = orderService.conditionSearch(ordersPageQueryDTO);
         return Result.success(pageResult);
+    }
+    
+    /**
+     * 各个状态的订单数量的统计
+     * @return
+     */
+    @GetMapping("/statusCount")
+    @Operation(summary = "各个状态的订单数量的统计")
+    public Result<OrderStatisticsVO> statistics() {
+        OrderStatisticsVO orderStatisticsVO = orderService.statistics();
+        return Result.success(orderStatisticsVO);
     }
 }

@@ -10,12 +10,14 @@ import com.sky.vo.OrderStatisticsVO;
 import com.sky.vo.OrderVO;
 import com.sky.result.Result;
 import com.sky.result.PageResult;
+import com.sky.dto.OrdersConfirmDTO;
 import com.sky.dto.OrdersPageQueryDTO;
 import io.swagger.v3.oas.annotations.Operation;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 /**
@@ -64,5 +66,17 @@ public class OrderController {
     public Result<OrderVO> details(@PathVariable("id") Long id) {
         OrderVO orderVO = orderService.details(id);
         return Result.success(orderVO);
+    }
+
+    /**
+     * 接单
+     * 
+     * @return
+     */
+    @PutMapping("/confirm")
+    @Operation(summary = "接单")
+    public Result confirm(@RequestBody OrdersConfirmDTO ordersConfirmDTO) {
+        orderService.confirm(ordersConfirmDTO);
+        return Result.success();
     }
 }

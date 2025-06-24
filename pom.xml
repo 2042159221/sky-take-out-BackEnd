@@ -19,7 +19,7 @@
     </modules>
     <properties>
         <mybatis.spring>3.0.2</mybatis.spring>
-        <lombok>1.18.30</lombok>
+        <lombok>1.18.32</lombok>
         <fastjson>1.2.76</fastjson>
         <commons.lang>2.6</commons.lang>
         <druid>1.2.1</druid>
@@ -44,6 +44,7 @@
                 <groupId>org.projectlombok</groupId>
                 <artifactId>lombok</artifactId>
                 <version>${lombok}</version>
+                <scope>provided</scope>
             </dependency>
 
             <dependency>

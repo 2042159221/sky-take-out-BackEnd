@@ -1,7 +1,5 @@
 package com.sky.controller.admin;
 
-
-
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 
@@ -37,14 +35,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 @Tag(name = "订单管理接口")
 public class OrderController {
 
-    private final AddressBookController addressBookController;
-
     @Autowired
     private OrderService orderService;
-
-    OrderController(AddressBookController addressBookController) {
-        this.addressBookController = addressBookController;
-    }
 
     /**
      * 订单搜索

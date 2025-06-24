@@ -11,6 +11,7 @@ import com.sky.vo.OrderVO;
 import com.sky.result.Result;
 import com.sky.result.PageResult;
 import com.sky.controller.user.AddressBookController;
+import com.sky.dto.OrdersCancelDTO;
 import com.sky.dto.OrdersConfirmDTO;
 import com.sky.dto.OrdersPageQueryDTO;
 import com.sky.dto.OrdersRejectionDTO;
@@ -99,5 +100,17 @@ public class OrderController {
     public Result rejection(@RequestBody OrdersRejectionDTO ordersRejectionDTO)throws Exception{
         orderService.rejection(ordersRejectionDTO);
         return Result.success();
-    };
+    }
+
+    /**
+     * 取消订单
+     * @return
+     */
+    @PutMapping("/cancel")
+    @Operation(summary = "取消订单")
+    public Result cancel(@RequestBody OrdersCancelDTO ordersCancelDTO)throws Exception{
+        orderService.cancel(ordersCancelDTO);
+        return Result.success();
+    }
+
 }

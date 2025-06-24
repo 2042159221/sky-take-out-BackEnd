@@ -113,4 +113,28 @@ public class OrderController {
         return Result.success();
     }
 
+    /**
+     * 派送订单
+     * @return
+     */
+    @PutMapping("/delivery/{id}")
+    @Operation(summary = "派送订单")
+    public Result delivery(@PathVariable("id") Long id) {
+        orderService.delivery(id);
+        return Result.success();
+    }
+
+    /**
+     * 完成订单
+     * @return
+     */
+    @PutMapping("/complete/{id}")
+    @Operation(summary = "完成订单")
+    public Result complete(@PathVariable("id") Long id) {
+        orderService.complete(id);
+
+        return Result.success();
+    }
+
+
 }

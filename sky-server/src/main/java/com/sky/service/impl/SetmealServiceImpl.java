@@ -34,7 +34,7 @@ import lombok.extern.slf4j.Slf4j;
 
  @Service
  @Slf4j
-public class SetmealSeviceImpl implements SetmealService {
+public class SetmealServiceImpl implements SetmealService {
 
     @Autowired
     private SetmealMapper setmealMapper;

@@ -10,8 +10,12 @@ import com.sky.vo.OrderStatisticsVO;
 import com.sky.vo.OrderVO;
 import com.sky.result.Result;
 import com.sky.result.PageResult;
+import com.sky.controller.user.AddressBookController;
+import com.sky.dto.OrdersCancelDTO;
 import com.sky.dto.OrdersConfirmDTO;
 import com.sky.dto.OrdersPageQueryDTO;
+import com.sky.dto.OrdersRejectionDTO;
+
 import io.swagger.v3.oas.annotations.Operation;
 
 import org.springframework.web.bind.annotation.GetMapping;
@@ -29,8 +33,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 @Tag(name = "订单管理接口")
 public class OrderController {
 
+    private final AddressBookController addressBookController;
+
     @Autowired
     private OrderService orderService;
+
+    OrderController(AddressBookController addressBookController) {
+        this.addressBookController = addressBookController;
+    }
 
     /**
      * 订单搜索
@@ -79,4 +89,52 @@ public class OrderController {
         orderService.confirm(ordersConfirmDTO);
         return Result.success();
     }
+
+    /**
+     * 拒单
+     * @return
+     * 
+     */
+    @PutMapping("/rejection")
+    @Operation(summary = "拒单")
+    public Result rejection(@RequestBody OrdersRejectionDTO ordersRejectionDTO)throws Exception{
+        orderService.rejection(ordersRejectionDTO);
+        return Result.success();
+    }
+
+    /**
+     * 取消订单
+     * @return
+     */
+    @PutMapping("/cancel")
+    @Operation(summary = "取消订单")
+    public Result cancel(@RequestBody OrdersCancelDTO ordersCancelDTO)throws Exception{
+        orderService.cancel(ordersCancelDTO);
+        return Result.success();
+    }
+
+    /**
+     * 派送订单
+     * @return
+     */
+    @PutMapping("/delivery/{id}")
+    @Operation(summary = "派送订单")
+    public Result delivery(@PathVariable("id") Long id) {
+        orderService.delivery(id);
+        return Result.success();
+    }
+
+    /**
+     * 完成订单
+     * @return
+     */
+    @PutMapping("/complete/{id}")
+    @Operation(summary = "完成订单")
+    public Result complete(@PathVariable("id") Long id) {
+        orderService.complete(id);
+
+        return Result.success();
+    }
+
+
 }

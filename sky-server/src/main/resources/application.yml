@@ -64,6 +64,11 @@ sky:
     notifyUrl: ${sky.wechat.notifyUrl}
     refundNotifyUrl: ${sky.wechat.refundNotifyUrl}
 
+  shop:
+    address:广东省广州市黄埔区九龙街区凤福花园8栋
+  baidu:
+    ak: ${sky.baidu.ak}
+
 # knife4j配置
 springdoc:
   swagger-ui:

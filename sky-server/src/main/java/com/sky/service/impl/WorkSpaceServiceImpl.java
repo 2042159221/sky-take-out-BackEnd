@@ -55,42 +55,61 @@ public class WorkSpaceServiceImpl implements WorkSpaceService {
          * 新增用户 ：当日新增用户的书量
          * 
          */
-        Map<String,Object> map = new HashMap<>();
-        map.put("begin",begin);
-        map.put("end",end);
-        
-        //查询总订单数
-        Integer totalOrderCount = orderMapper.countByMap(map);
-        //查询有效订单数
-        map.put("status",Orders.COMPLETED);
+        try {
+            Map<String,Object> map = new HashMap<>();
+            map.put("begin",begin);
+            map.put("end",end);
+            
+            //查询总订单数
+            Integer totalOrderCount = orderMapper.countByMap(map);
+            totalOrderCount = totalOrderCount == null ? 0 : totalOrderCount;
+            
+            //查询有效订单数
+            map.put("status",Orders.COMPLETED);
 
-        //营业额
-        Double turnover = orderMapper.sumByMap(map);
-        turnover = turnover == null? 0.0 : turnover;
+            //营业额
+            Double turnover = orderMapper.sumByMap(map);
+            turnover = turnover == null? 0.0 : turnover;
 
-        //有效订单数
-        Integer validOrderCount = orderMapper.countByMap(map);
+            //有效订单数
+            Integer validOrderCount = orderMapper.countByMap(map);
+            validOrderCount = validOrderCount == null ? 0 : validOrderCount;
 
-        Double unitPrice = 0.0;
+            Double unitPrice = 0.0;
 
-        Double orderCompletionRate = 0.0;
-        if(totalOrderCount != 0 && validOrderCount != 0) {
-            //订单完成率
-            orderCompletionRate = validOrderCount.doubleValue() / totalOrderCount.doubleValue();
-            //平均客单价
-            unitPrice = turnover.doubleValue() / validOrderCount.doubleValue();
+            Double orderCompletionRate = 0.0;
+            if(totalOrderCount != 0 && validOrderCount != 0) {
+                //订单完成率
+                orderCompletionRate = validOrderCount.doubleValue() / totalOrderCount.doubleValue();
+                //平均客单价
+                unitPrice = turnover.doubleValue() / validOrderCount.doubleValue();
+            }
+
+            //新增用户数
+            Integer newUsers = userMapper.countByMap(map);
+            newUsers = newUsers == null ? 0 : newUsers;
+
+            log.info("营业额：{}，有效订单数：{}，订单完成率：{}，平均客单价：{}，新增用户数：{}", 
+                    turnover, validOrderCount, orderCompletionRate, unitPrice, newUsers);
+
+            return BusinessDataVO.builder()
+                .turnover(turnover)
+                .validOrderCount(validOrderCount)
+                .orderCompletionRate(orderCompletionRate)
+                .unitPrice(unitPrice)
+                .newUsers(newUsers)
+                .build();
+        } catch (Exception e) {
+            log.error("获取营业数据异常", e);
+            // 返回默认值
+            return BusinessDataVO.builder()
+                .turnover(0.0)
+                .validOrderCount(0)
+                .orderCompletionRate(0.0)
+                .unitPrice(0.0)
+                .newUsers(0)
+                .build();
         }
-
-        //新增用户数
-        Integer newUsers = userMapper.countByMap(map);
-
-        return BusinessDataVO.builder()
-            .turnover(turnover)
-            .validOrderCount(validOrderCount)
-            .orderCompletionRate(orderCompletionRate)
-            .unitPrice(unitPrice)
-            .newUsers(newUsers)
-            .build();
     }
 
     /**

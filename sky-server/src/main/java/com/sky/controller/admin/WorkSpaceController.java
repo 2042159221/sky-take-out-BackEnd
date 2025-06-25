@@ -42,14 +42,41 @@ public class WorkSpaceController {
     @GetMapping("/businessData")
     @Operation(summary = "工作台今日数据查询")
     public Result<BusinessDataVO> businessData() {
-        //获取当天的开始时间
-        LocalDateTime begin = LocalDateTime.now().with(LocalDateTime.MIN);
-        //获取当天的结束时间
-        LocalDateTime end = LocalDateTime.now().with(LocalDateTime.MAX);
-        //获取当天的数据
-        BusinessDataVO businessDataVO = workSpaceService.getBusinessData(begin, end);
-        return Result.success(businessDataVO);
-        
+        try {
+            //获取当天的开始时间
+            LocalDateTime begin = LocalDateTime.now().withHour(0).withMinute(0).withSecond(0).withNano(0);
+            //获取当天的结束时间
+            LocalDateTime end = LocalDateTime.now().withHour(23).withMinute(59).withSecond(59).withNano(999999999);
+            
+            log.info("查询营业数据，开始时间：{}，结束时间：{}", begin, end);
+            
+            //获取当天的数据
+            BusinessDataVO businessDataVO = workSpaceService.getBusinessData(begin, end);
+            
+            // 确保返回值不为null
+            if(businessDataVO == null) {
+                businessDataVO = BusinessDataVO.builder()
+                    .turnover(0.0)
+                    .validOrderCount(0)
+                    .orderCompletionRate(0.0)
+                    .unitPrice(0.0)
+                    .newUsers(0)
+                    .build();
+            }
+            
+            return Result.success(businessDataVO);
+        } catch (Exception e) {
+            log.error("查询营业数据异常", e);
+            // 返回默认值，避免前端显示NaN
+            BusinessDataVO defaultData = BusinessDataVO.builder()
+                .turnover(0.0)
+                .validOrderCount(0)
+                .orderCompletionRate(0.0)
+                .unitPrice(0.0)
+                .newUsers(0)
+                .build();
+            return Result.success(defaultData);
+        }
     }
 
     /**

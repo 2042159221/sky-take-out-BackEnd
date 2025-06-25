@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import com.sky.service.ReportService;
 import com.sky.vo.TurnoverReportVO;
 import com.sky.vo.UserReportVO;
+import com.sky.vo.OrderReportVO;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -71,5 +72,22 @@ public class ReportController {
     ){
         return Result.success(reportService.getUserStatistics(begin,end));
     }
+
+    /**
+     * 订单数量统计
+     * @param begin
+     * @param end
+     * @return
+     */
+    @GetMapping("/ordersStatistics")
+    @Operation(summary ="用户数据统计")
+    public Result<OrderReportVO> orderStatistics(
+        @DateTimeFormat(pattern = "yyy-MM-dd")
+                LocalDate begin,
+        @DateTimeFormat(pattern ="yyyy-MM-dd")
+                LocalDate end){
+                    return Result.success(reportService.getOrderStatistics(begin,end));
+
+                }
     
 }

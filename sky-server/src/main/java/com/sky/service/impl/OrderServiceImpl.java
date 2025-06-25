@@ -619,24 +619,17 @@ public class OrderServiceImpl implements OrderService {
      */
     public void reminder(Long id) {
         // 查询订单是否存在
-        Orders ordersDB = orderMapper.getById(id);
-        if (ordersDB == null) {
+        Orders orders = orderMapper.getById(id);
+        if (orders == null) {
             throw new OrderBusinessException(MessageConstant.ORDER_NOT_FOUND);
         }
 
-        // 校验订单状态
-        if (ordersDB.getStatus().equals(Orders.TO_BE_CONFIRMED) ||
-            ordersDB.getStatus().equals(Orders.CONFIRMED) || 
-            ordersDB.getStatus().equals(Orders.DELIVERY_IN_PROGRESS)) {
-            
-            Map<String, Object> map = new HashMap<>();
-            map.put("type", 2); // 消息类型，2表示催单
-            map.put("orderId", ordersDB.getId());
-            map.put("content", "订单号：" + ordersDB.getNumber() + "，用户发起催单");
-            
-            webSocketServer.sendToAllClient(JSON.toJSONString(map));
-        } else {
-            throw new OrderBusinessException(MessageConstant.ORDER_STATUS_ERROR);
-        }
+       //基于WebSocket实现催单
+       Map map = new HashMap<>();
+       map.put("type", 2);//2代表用户催单
+       map.put("orderId",id);
+       map.put("content","订单号：" + orders.getNumber());
+       webSocketServer.sendToAllClient(JSON.toJSONString(map));
     }
+
 }

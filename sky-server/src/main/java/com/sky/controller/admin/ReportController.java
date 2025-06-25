@@ -5,6 +5,7 @@ import com.sky.service.ReportService;
 import com.sky.vo.TurnoverReportVO;
 import com.sky.vo.UserReportVO;
 import com.sky.vo.OrderReportVO;
+import com.sky.vo.SalesTop10ReportVO;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -89,5 +90,22 @@ public class ReportController {
                     return Result.success(reportService.getOrderStatistics(begin,end));
 
                 }
-    
+
+
+    /**
+     * 销量排名统计
+     * @param begin
+     * @param end
+     * @return
+     */
+    @GetMapping("/top10")
+    @Operation(summary ="销量排名统计")
+    public Result<SalesTop10ReportVO> top10(
+        @DateTimeFormat(pattern = "yyy-MM-dd")
+                LocalDate begin,
+        @DateTimeFormat(pattern = "yyy-MM-dd")
+                LocalDate end
+    ){
+        return Result.success(reportService.getSalesTop10(begin,end));
+    }
 }

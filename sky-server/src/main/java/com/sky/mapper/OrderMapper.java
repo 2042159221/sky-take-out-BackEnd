@@ -12,6 +12,7 @@ import java.util.Map;
 import com.github.pagehelper.Page;
 import com.sky.dto.OrdersPageQueryDTO;
 import com.sky.entity.Orders;
+import com.sky.dto.GoodsSalesDTO;
 
 @Mapper
 public interface OrderMapper {
@@ -76,4 +77,11 @@ public interface OrderMapper {
      * @param map
      */
     Integer countByMap(Map<String, Object> map);
+    
+    /**
+     * 查询商品销量
+     * @param begin
+     * @param end
+     */
+    List<GoodsSalesDTO> getSalesTop10(LocalDateTime begin , LocalDateTime end);
 } 

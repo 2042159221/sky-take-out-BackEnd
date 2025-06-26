@@ -16,7 +16,7 @@ import com.sky.constant.StatusConstant;
 import com.sky.entity.Orders;
 import com.sky.mapper.DishMapper;
 import com.sky.mapper.SetmealMapper;
-import com.sky.service.WorkSpaceService;
+import com.sky.service.WorkspaceService;
 import com.sky.vo.BusinessDataVO;
 import com.sky.vo.DishOverViewVO;
 import com.sky.vo.OrderOverViewVO;
@@ -24,7 +24,7 @@ import com.sky.vo.SetmealOverViewVO;
 
 @Service
 @Slf4j
-public class WorkSpaceServiceImpl implements WorkSpaceService {
+public class WorkspaceServiceImpl implements WorkspaceService {
 
 
 

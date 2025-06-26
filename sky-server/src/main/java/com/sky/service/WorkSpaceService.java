@@ -7,7 +7,7 @@ import com.sky.vo.DishOverViewVO;
 import com.sky.vo.OrderOverViewVO;
 import com.sky.vo.SetmealOverViewVO;
 
-public interface WorkSpaceService {
+public interface WorkspaceService {
     /**
      * 根据时间段统计营业数据
      * @param begin

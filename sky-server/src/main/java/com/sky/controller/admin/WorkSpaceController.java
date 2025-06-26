@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.sky.result.Result;
-import com.sky.service.WorkSpaceService;
+import com.sky.service.WorkspaceService;
 import com.sky.vo.BusinessDataVO;
 import com.sky.vo.DishOverViewVO;
 import com.sky.vo.OrderOverViewVO;
@@ -32,7 +32,7 @@ public class WorkSpaceController {
 
 
     @Autowired
-    private WorkSpaceService workSpaceService;
+    private WorkspaceService workSpaceService;
 
 
     /**
